@@ -1,0 +1,44 @@
+!Указание версии FRR
+frr version 8.1
+frr defaults traditional
+!Указываем имя машины
+hostname {{ansible_hostname}}
+log syslog informational
+no ipv6 forwarding
+service integrated-vtysh-config
+!
+!Добавляем информацию об интерфейсе 
+{% for i in items %}
+interface {{i.name}}
+ description {{i.desc}}
+ ip address {{i.address}}
+ ip ospf mtu-ignore
+{% if ansible_hostname == 'router1' and i.name == 'eth1' %}
+ ip ospf cost 1000
+{% elif ansible_hostname == 'router2' and symmetric_routing == true and i.name == 'eth2' %}
+ ip ospf cost 1000
+{% else %}
+ !ip ospf cost 450
+{% endif %}
+ ip ospf hello-interval 10
+ ip ospf dead-interval 30
+{% endfor %}
+
+!Начало настройки OSPF
+router ospf
+ !Указываем router-id 
+ router-id {{ router_id }}
+ !Указываем сети, которые хотим анонсировать соседним роутерам
+{% for i in items %}
+ network {{i.network}} area 0
+{% endfor %}
+
+ !Указываем адреса соседних роутеров
+{% for i in neighbor %}
+ neighbor {{ i }}
+{% endfor %}
+
+!Указываем адрес log-файла
+log file /var/log/frr/frr.log
+default-information originate always
+

@@ -1,0 +1,21 @@
+---
+
+hostname: router2
+router_id: 2.2.2.2
+symmetric_routing: true
+neighbor: 
+  - 10.0.10.1
+  - 10.0.11.1
+items:
+  - name: eth1
+    desc: r2-r1
+    address: 10.0.10.2/30
+    network: 10.0.10.0/30
+  - name: eth2
+    desc: r2-r3
+    address: 10.0.11.2/30
+    network: 10.0.11.0/30
+  - name: eth3
+    desc: net_router1
+    address: 192.168.20.1/24
+    network: 192.168.20.0/24
